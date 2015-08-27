@@ -104,7 +104,8 @@ function step(timestamp) {
     updateTestInterval(dTime);
     if (!testEnded) {
         update(dTime);
-        window.requestAnimationFrame(step);
+        //window.requestAnimationFrame(step);
+        setTimeout(step,1);
     }
 
     let frameRateInterval = now - lastFPSUpdateTime;
@@ -121,6 +122,12 @@ function step(timestamp) {
     fillText(canvasContext, "Sprites: " + testSpritesCount, "12pt Courier New", 10, 60, "#FFFFFF");
 
 
+}
+
+function mainLoop() {
+    while (!testEnded) {
+        step();
+    }
 }
 
 // Counts the # of sprites that have been successfully loaded
@@ -140,7 +147,9 @@ function onSpriteReady(sprite) {
             moving_object.boundsRect = new Rect({top: 0, left: -40, width: 1320, height: 720});
             movingObjects.push(moving_object);
         }
-        window.requestAnimationFrame(step);
+        //window.requestAnimationFrame(step);
+        //mainLoop();
+        setTimeout(step,1);
     }
 }
 
