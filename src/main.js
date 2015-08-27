@@ -6,6 +6,7 @@ import Sprite from './game/sprite';
 import MovingObject from './game/movingObject';
 import Rect from './game/rect';
 import getTimer from './get-timer';
+import config from '../config';
 
 // **** CANVAS ****
 
@@ -39,9 +40,9 @@ let lastFPSUpdateTime = getTimer();
 
 
 let testEnded = false;
-let testSpritesIncrement = 1000;
-let maxRenderedSprites = 10000;
-let testIterationInterval = 3000;
+let testSpritesIncrement = config.testSpritesIncrement;
+let maxRenderedSprites = config.maxRenderedSprites;
+let testIterationInterval = config.testIterationInterval;
 let testIteration = 0;
 let testIterationElapsedTime = null;
 let testSpritesCount = testSpritesIncrement;
