@@ -1,0 +1,34 @@
+{
+  "name": "es6-electron-canvas-benchmark",
+  "version": "0.0.1",
+  "description": "ES6 Electron Canvas benchmarking tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "TBD"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/wwlib/es6-electron-canvas-benchmark.git"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-babel": "^5.1.0",
+    "gulp-cached": "^1.0.4",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-watch": "^4.2.4",
+    "gulp-mocha": "^2.1.0"
+  },
+  "keywords": [
+    "es6",
+    "electron",
+    "canvas",
+    "benchmark",
+    "tool"
+  ],
+  "author": "Andrew Rapo <andrew@worthwhilegames.org> (http://worthwhilegames.org)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wwlib/es6-electron-canvas-benchmark/issues"
+  },
+  "homepage": "https://github.com/wwlib/es6-electron-canvas-benchmark#readme"
+}
