@@ -9,6 +9,7 @@ class MovingObject {
     constructor(sprite, x, y, velocity = {x: 0, y: 0}) {
         this.sprite = sprite;
         this.coords = {x: x, y: y};
+        this.coordsPrev = {x: x, y: y};
         this.width = this.sprite.width;
         this.height = this.sprite.width;
         this.ease = {x: 0, y: 0};
@@ -18,6 +19,7 @@ class MovingObject {
         this.friction = {x:0, y:0};
         this.boundsRect = new Rect({top: 0, left: 0, width: 0, height: 0});
         this.alive = true;
+        this.updateDelta = {x: 0, y: 0};
 
     }
 
@@ -49,25 +51,39 @@ class MovingObject {
         this.rotation = degrees;
     }
 
-    update(elapsed) {
-        let seconds = elapsed / 1000;
-        this.velocity.x += this.acceleration.x * seconds;
-        this.velocity.y += this.acceleration.y * seconds;
-        this.velocity.x *= (1 - this.friction.x * seconds);
-        this.velocity.y *= (1 - this.friction.y * seconds);
-        this.coords.x += this.velocity.x * seconds;
-        this.coords.y += this.velocity.y * seconds;
+    update(delta) {
+        //let seconds = delta / 1000;
+        //this.velocity.x += this.acceleration.x * delta;
+        //this.velocity.y += this.acceleration.y * delta;
+        //this.velocity.x *= (1 - this.friction.x * delta);
+        //this.velocity.y *= (1 - this.friction.y * delta);
+        //this.coords.x += this.velocity.x * delta;
+        //this.coords.y += this.velocity.y * delta;
+
+        this.coordsPrev.x = this.coords.x;
+        this.coordsPrev.y = this.coords.y;
+
+        this.coords.x += this.velocity.x * delta;
+        this.coords.y += this.velocity.y * delta;
     }
 
-    draw(context) {
+    draw(context, interp) {
 
-        this.sprite.x = this.coords.x + this.ease.x;
-        this.sprite.y = this.coords.y + this.ease.y;
+        //this.coords.x += this.updateDelta.x * interp;
+        //this.coords.y += this.updateDelta.y * interp;
+
+        if (interp) {
+            this.sprite.x = this.coordsPrev.x + (this.coords.x - this.coordsPrev.x) * interp; //this.coords.x;// + this.ease.x;
+            this.sprite.y = this.coordsPrev.y + (this.coords.y - this.coordsPrev.y) * interp; //this.coords.y;// + this.ease.y;
+        } else {
+            this.sprite.x = this.coords.x;
+            this.sprite.y = this.coords.y;
+        }
 
         this.sprite.draw(context);
 
-        this.ease.x *= 0.9;
-        this.ease.y *= 0.9;
+        //this.ease.x *= 0.9;
+        //this.ease.y *= 0.9;
     }
 
     moveTo(x, y) {

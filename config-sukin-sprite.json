@@ -1,0 +1,5 @@
+{
+  "testSpritesIncrement": 1,
+  "maxRenderedSprites": 100,
+  "testIterationInterval": 1000
+}

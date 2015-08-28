@@ -6,11 +6,22 @@
 import Sprite from './game/sprite';
 import MovingObject from './game/movingObject';
 import Rect from './game/rect';
+import config from '../config-sukin-sprite';
 
 let canvas = document.getElementById("benchmark-canvas");
 let canvasContext = canvas.getContext("2d");
 let crystalSprite = new Sprite("crystal", null, 20, 20);
 crystalSprite.load("./images/crystal.png", onSpriteReady);
+
+let movingObjects = [];
+let testEnded = false;
+let testSpritesIncrement = config.testSpritesIncrement;
+let maxRenderedSprites = config.maxRenderedSprites;
+let testIterationInterval = config.testIterationInterval;
+let testIteration = 0;
+let testIterationElapsedTime = null;
+let testSpritesCount = testSpritesIncrement;
+let score = 0;
 
 var box = document.getElementById('box'),
     fpsDisplay = document.getElementById('fpsDisplay'),
@@ -33,14 +44,33 @@ function update(delta) {
     boxPos += boxVelocity * delta;
     // Switch directions if we go too far
     if (boxPos >= limit || boxPos <= 0) boxVelocity = -boxVelocity;
+
+
+    for (let i=0; i < testSpritesCount; i++) {
+        let obj = movingObjects[i];
+        obj.update(delta);
+        if (!obj.inBounds) {
+            obj.coords.x = obj.bounds.left;
+        }
+    }
 }
 
 function draw(interp) {
-    box.style.left = (boxLastPos + (boxPos - boxLastPos) * interp) + 'px';
 
-    canvasContext.clearRect(crystalSprite.x, crystalSprite.y, crystalSprite.width, crystalSprite.height);
-    crystalSprite.x = (boxLastPos + (boxPos - boxLastPos) * interp);
-    crystalSprite.draw(canvasContext);
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+
+    //box.style.left = (boxLastPos + (boxPos - boxLastPos) * interp) + 'px';
+
+    //canvasContext.clearRect(crystalSprite.x, crystalSprite.y, crystalSprite.width, crystalSprite.height);
+    //crystalSprite.x = (boxLastPos + (boxPos - boxLastPos) * interp);
+    //crystalSprite.draw(canvasContext);
+
+    for (let i=0; i < testSpritesCount; i++) {
+        let obj = movingObjects[i];
+        //obj.coords.x = (boxLastPos + (boxPos - boxLastPos) * interp);
+        //canvasContext.clearRect(obj.coordsPrev.x, obj.coordsPrev.y, obj.width, obj.height);
+        obj.draw(canvasContext, interp);
+    }
 
     fpsDisplay.textContent = Math.round(fps) + ' FPS';
 }
@@ -55,10 +85,10 @@ function begin() {
 
 function end(fps) {
     if (fps < 25) {
-        box.style.backgroundColor = 'blue';
+        box.style.backgroundColor = 'red';
     }
     else if (fps > 30) {
-        box.style.backgroundColor = 'red';
+        box.style.backgroundColor = 'forestgreen';
     }
 }
 
@@ -102,6 +132,11 @@ function mainLoop(timestamp) {
 
 function onSpriteReady(sprite) {
     console.log("onSpriteReady: " + sprite.id);
-    crystalSprite.y = 60;
+    let random_x = Math.floor(Math.random() * 1280);
+    let random_y = Math.floor(Math.random() * 720);
+    let random_velocity = 0.08; //pixels per timestep
+    let moving_object = new MovingObject(crystalSprite, random_x, random_y, {x: random_velocity, y: 0});
+    moving_object.boundsRect = new Rect({top: 0, left: -40, width: 1320, height: 720});
+    movingObjects.push(moving_object);
     window.requestAnimationFrame(mainLoop);
 }
