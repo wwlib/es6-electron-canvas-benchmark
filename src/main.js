@@ -92,7 +92,7 @@ function update(dTime) {
 
 // **** MAIN LOOP ****
 
-function step(timestamp) {
+function step2(timestamp) {
 
 
     frameCount++;
@@ -124,10 +124,11 @@ function step(timestamp) {
 
 }
 
-function mainLoop() {
-    while (!testEnded) {
-        step();
-    }
+function step(timestamp) {
+    crystal_sprite.x++;
+    crystal_sprite.draw(canvasContext);
+    //window.requestAnimationFrame(step);
+    setTimeout(step,1);
 }
 
 // Counts the # of sprites that have been successfully loaded
@@ -148,7 +149,6 @@ function onSpriteReady(sprite) {
             movingObjects.push(moving_object);
         }
         //window.requestAnimationFrame(step);
-        //mainLoop();
         setTimeout(step,1);
     }
 }
