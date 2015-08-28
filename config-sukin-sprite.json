@@ -2,5 +2,7 @@
   "testSpritesIncrement": 1,
   "maxRenderedSprites": 10,
   "testIterationInterval": 1000,
-  "clearCanvasPerFrame": false
+  "clearCanvasPerFrame": false,
+  "clearSpritePerFrame": true,
+  "useSetTimeout": false
 }

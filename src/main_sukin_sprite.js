@@ -19,6 +19,8 @@ let testSpritesIncrement = config.testSpritesIncrement;
 let maxRenderedSprites = config.maxRenderedSprites;
 let testIterationInterval = config.testIterationInterval;
 let clearCanvasPerFrame = config.clearCanvasPerFrame;
+let clearSpritePerFrame = config.clearSpritePerFrame;
+let useSetTimeout = config.useSetTimeout;
 let testIteration = 0;
 let testIterationElapsedTime = null;
 let testSpritesCount = testSpritesIncrement;
@@ -72,7 +74,9 @@ function draw(interp) {
     for (let i=0; i < maxRenderedSprites; i++) {
         let obj = movingObjects[i];
         //obj.coords.x = (boxLastPos + (boxPos - boxLastPos) * interp);
-        //canvasContext.clearRect(obj.coordsPrev.x, obj.coordsPrev.y, obj.width, obj.height);
+        if (clearSpritePerFrame) {
+            canvasContext.clearRect(obj.coordsPrev.x, obj.coordsPrev.y, obj.width, obj.height);
+        }
         obj.draw(canvasContext, interp);
     }
 
@@ -97,9 +101,16 @@ function end(fps) {
 }
 
 function mainLoop(timestamp) {
+    if (!timestamp) {
+        timestamp = Date.now();
+    }
     // Throttle the frame rate.    
     if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
-        requestAnimationFrame(mainLoop);
+        if (useSetTimeout) {
+            setTimeout(mainLoop, 1);
+        } else {
+            window.requestAnimationFrame(mainLoop);
+        }
         //console.log(`Throttling.`);
         return;
     }
@@ -130,7 +141,11 @@ function mainLoop(timestamp) {
 
     end(fps);
 
-    requestAnimationFrame(mainLoop);
+    if (useSetTimeout) {
+        setTimeout(mainLoop, 1);
+    } else {
+        window.requestAnimationFrame(mainLoop);
+    }
 }
 
 
@@ -144,5 +159,11 @@ function onSpriteReady(sprite) {
         moving_object.boundsRect = new Rect({top: 0, left: -40, width: 1320, height: 680});
         movingObjects.push(moving_object);
     }
-    window.requestAnimationFrame(mainLoop);
+
+
+    if (useSetTimeout) {
+        setTimeout(mainLoop, 1);
+    } else {
+        window.requestAnimationFrame(mainLoop);
+    }
 }
