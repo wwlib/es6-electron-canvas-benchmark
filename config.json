@@ -1,5 +1,6 @@
 {
   "testSpritesIncrement": 100,
   "maxRenderedSprites": 1000,
-  "testIterationInterval": 3000
+  "testIterationInterval": 3000,
+  "useSetTimeout": false
 }

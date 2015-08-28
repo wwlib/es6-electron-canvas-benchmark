@@ -43,6 +43,7 @@ let testEnded = false;
 let testSpritesIncrement = config.testSpritesIncrement;
 let maxRenderedSprites = config.maxRenderedSprites;
 let testIterationInterval = config.testIterationInterval;
+let useSetTimeout = config.useSetTimeout;
 let testIteration = 0;
 let testIterationElapsedTime = null;
 let testSpritesCount = testSpritesIncrement;
@@ -76,7 +77,6 @@ function updateTestInterval(dTime) {
             fillText(canvasContext, "Test Completed! Score: " + score, "12pt Courier New", 10, 80, "#FFFFFF");
         }
     }
-
 }
 
 function update(dTime) {
@@ -104,8 +104,11 @@ function step(timestamp) {
     updateTestInterval(dTime);
     if (!testEnded) {
         update(dTime);
-        //window.requestAnimationFrame(step);
-        setTimeout(step,1);
+        if (useSetTimeout) {
+            setTimeout(step,1);
+        } else {
+            window.requestAnimationFrame(step);
+        }
     }
 
     let frameRateInterval = now - lastFPSUpdateTime;
@@ -121,13 +124,6 @@ function step(timestamp) {
     fillText(canvasContext, "dTime: " + dTime, "12pt Courier New", 10, 40, "#FFFFFF");
     fillText(canvasContext, "Sprites: " + testSpritesCount, "12pt Courier New", 10, 60, "#FFFFFF");
 
-
-}
-
-function mainLoop() {
-    while (!testEnded) {
-        step();
-    }
 }
 
 // Counts the # of sprites that have been successfully loaded
@@ -147,9 +143,12 @@ function onSpriteReady(sprite) {
             moving_object.boundsRect = new Rect({top: 0, left: -40, width: 1320, height: 720});
             movingObjects.push(moving_object);
         }
-        //window.requestAnimationFrame(step);
-        //mainLoop();
-        setTimeout(step,1);
+
+        if (useSetTimeout) {
+            setTimeout(step,1);
+        } else {
+            window.requestAnimationFrame(step);
+        }
     }
 }
 
