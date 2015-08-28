@@ -1,5 +1,6 @@
 {
   "testSpritesIncrement": 1,
-  "maxRenderedSprites": 100,
-  "testIterationInterval": 1000
+  "maxRenderedSprites": 10,
+  "testIterationInterval": 1000,
+  "clearCanvasPerFrame": false
 }

@@ -18,6 +18,7 @@ let testEnded = false;
 let testSpritesIncrement = config.testSpritesIncrement;
 let maxRenderedSprites = config.maxRenderedSprites;
 let testIterationInterval = config.testIterationInterval;
+let clearCanvasPerFrame = config.clearCanvasPerFrame;
 let testIteration = 0;
 let testIterationElapsedTime = null;
 let testSpritesCount = testSpritesIncrement;
@@ -46,18 +47,21 @@ function update(delta) {
     if (boxPos >= limit || boxPos <= 0) boxVelocity = -boxVelocity;
 
 
-    for (let i=0; i < testSpritesCount; i++) {
+    for (let i=0; i < maxRenderedSprites; i++) {
         let obj = movingObjects[i];
         obj.update(delta);
         if (!obj.inBounds) {
             obj.coords.x = obj.bounds.left;
+            obj.coordsPrev.x = obj.bounds.left;
         }
     }
 }
 
 function draw(interp) {
 
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    if (clearCanvasPerFrame) {
+        canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
     //box.style.left = (boxLastPos + (boxPos - boxLastPos) * interp) + 'px';
 
@@ -65,7 +69,7 @@ function draw(interp) {
     //crystalSprite.x = (boxLastPos + (boxPos - boxLastPos) * interp);
     //crystalSprite.draw(canvasContext);
 
-    for (let i=0; i < testSpritesCount; i++) {
+    for (let i=0; i < maxRenderedSprites; i++) {
         let obj = movingObjects[i];
         //obj.coords.x = (boxLastPos + (boxPos - boxLastPos) * interp);
         //canvasContext.clearRect(obj.coordsPrev.x, obj.coordsPrev.y, obj.width, obj.height);
@@ -132,11 +136,13 @@ function mainLoop(timestamp) {
 
 function onSpriteReady(sprite) {
     console.log("onSpriteReady: " + sprite.id);
-    let random_x = Math.floor(Math.random() * 1280);
-    let random_y = Math.floor(Math.random() * 720);
-    let random_velocity = 0.08; //pixels per timestep
-    let moving_object = new MovingObject(crystalSprite, random_x, random_y, {x: random_velocity, y: 0});
-    moving_object.boundsRect = new Rect({top: 0, left: -40, width: 1320, height: 720});
-    movingObjects.push(moving_object);
+    for (let i=0; i< maxRenderedSprites; i++) {
+        let random_x = Math.floor(Math.random() * 1280);
+        let random_y = Math.floor(Math.random() * 720);
+        let random_velocity = 0.08; //pixels per timestep
+        let moving_object = new MovingObject(crystalSprite, random_x, random_y, {x: random_velocity, y: 0});
+        moving_object.boundsRect = new Rect({top: 0, left: -40, width: 1320, height: 680});
+        movingObjects.push(moving_object);
+    }
     window.requestAnimationFrame(mainLoop);
 }
