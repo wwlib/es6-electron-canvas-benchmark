@@ -4,7 +4,7 @@
   "testIterationInterval": 1000,
   "clearCanvasPerFrame": false,
   "clearSpritePerFrame": true,
-  "useSetTimeout": true,
+  "useSetTimeout": false,
   "maxFPS": 60,
   "throttleFramerate": false
 }

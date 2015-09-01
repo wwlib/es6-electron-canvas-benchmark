@@ -30,14 +30,6 @@ bullet_sprite.load("./images/bullet.png", onSpriteReady);
 
 let spritesLoaded = 0;
 let movingObjects = [];
-let prevTimestamp = 0;
-let frameTime = 0;
-let frameRate = 0;
-let frameCount = 0;
-let lastFrameTime = getTimer();
-let lastFPSUpdateTime = getTimer();
-
-
 
 let testEnded = false;
 let testSpritesIncrement = config.testSpritesIncrement;
@@ -46,11 +38,22 @@ let testIterationInterval = config.testIterationInterval;
 let clearCanvasPerFrame = config.clearCanvasPerFrame;
 let clearSpritePerFrame = config.clearSpritePerFrame;
 let useSetTimeout = config.useSetTimeout;
+let throttleFramerate = config.throttleFramerate;
+let maxFPS = config.maxFPS;
+let displayStatsPerFrame = config.displayStatsPerFrame;
 let testIteration = 0;
 let testIterationElapsedTime = null;
 let testSpritesCount = testSpritesIncrement;
 let score = 0;
 
+let lastFrameTimeMs = 0,
+    delta = 0,
+    timestep = 1000 / maxFPS,
+    gameFPS = null,
+    systemFPS = null,
+    gameFramesThisSecond = 0,
+    systemFramesThisSecond = 0,
+    lastFpsUpdate = 0;
 
 // **** TEST **** //
 
@@ -68,15 +71,15 @@ function updateTestInterval(dTime) {
 
     if (testIterationElapsedTime >= testIterationInterval) {
         testIterationElapsedTime = 0;
-        console.log(`Test Iteration ${testIteration} Completed: FPS: ${frameRate}, Sprites: ${testSpritesCount}`);
-        score += frameRate;
+        console.log(`Test Iteration ${testIteration} Completed: System FPS: ${systemFPS}, Sprites: ${testSpritesCount}`);
+        score += Math.round(systemFPS);
         testIteration++;
         testSpritesCount += testSpritesIncrement;
 
         if (testSpritesCount > maxRenderedSprites) {
             testEnded = true;
             console.log(`Test Completed!`);
-            fillText(canvasContext, "Test Completed! Score: " + score, "12pt Courier New", 10, 120, "#FFFFFF");
+            fillText(canvasContext, "Test Completed! Score: " + score, "12pt Courier New", 10, 140, "#FFFFFF");
         }
     }
 
@@ -85,13 +88,20 @@ function updateTestInterval(dTime) {
 // **** MAIN LOOP ****
 
 function step(timestamp) {
+    if (!timestamp) {
+        timestamp = Date.now();
+    }
 
+    systemFramesThisSecond++;
+    gameFramesThisSecond++;
 
-    frameCount++;
-    let now = getTimer();
-    let dTime = now - lastFrameTime;
+    let dTime = timestamp - lastFrameTimeMs;
+    //console.log(`${timestamp}: ${dTime}`);
+    lastFrameTimeMs = timestamp;
 
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    if (clearCanvasPerFrame) {
+        canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
     updateTestInterval(dTime);
     if (!testEnded) {
@@ -110,29 +120,23 @@ function step(timestamp) {
         }
     }
 
-    let frameRateInterval = now - lastFPSUpdateTime;
-    if (frameRateInterval > 1000)
-    {
-        frameRate = Math.floor(1000 / (frameRateInterval / frameCount));
-        lastFPSUpdateTime = now;
-        frameCount = 0;
+    if (timestamp > lastFpsUpdate + 1000) {
+        if (!gameFPS) gameFPS = gameFramesThisSecond;
+        if (!systemFPS) systemFPS = systemFramesThisSecond;
+
+        gameFPS = 0.25 * gameFramesThisSecond + 0.75 * gameFPS;
+        systemFPS = 0.25 * systemFramesThisSecond + 0.75 * systemFPS;
+
+        lastFpsUpdate = timestamp;
+        gameFramesThisSecond = 0;
+        systemFramesThisSecond = 0;
     }
-    lastFrameTime = now;
 
-    fillText(canvasContext, "FPS: " + frameRate, "12pt Courier New", 10, 60, "#FFFFFF");
-    fillText(canvasContext, "dTime: " + dTime, "12pt Courier New", 10, 80, "#FFFFFF");
-    fillText(canvasContext, "Sprites: " + testSpritesCount, "12pt Courier New", 10, 100, "#FFFFFF");
-
-
-}
-
-function step2(timestamp) {
-    crystal_sprite.x++;
-    crystal_sprite.draw(canvasContext);
-    if (useSetTimeout) {
-        setTimeout(step,1);
-    } else {
-        window.requestAnimationFrame(step);
+    if (displayStatsPerFrame) {
+        fillText(canvasContext, "Game FPS: " + Math.round(gameFPS), "12pt Courier New", 10, 60, "#FFFFFF");
+        fillText(canvasContext, "System FPS: " + Math.round(systemFPS), "12pt Courier New", 10, 80, "#FFFFFF");
+        fillText(canvasContext, "dTime: " + dTime, "12pt Courier New", 10, 100, "#FFFFFF");
+        fillText(canvasContext, "Sprites: " + testSpritesCount, "12pt Courier New", 10, 120, "#FFFFFF");
     }
 }
 
@@ -153,9 +157,16 @@ function onSpriteReady(sprite) {
             moving_object.boundsRect = new Rect({top: 0, left: -40, width: 1320, height: 720});
             movingObjects.push(moving_object);
         }
+
+
+
         if (useSetTimeout) {
+            lastFrameTimeMs = Date.now();
+            lastFpsUpdate = Date.now();
             setTimeout(step,1);
         } else {
+            lastFrameTimeMs = 0;
+            lastFpsUpdate = 0;
             window.requestAnimationFrame(step);
         }
     }
