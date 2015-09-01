@@ -46,8 +46,8 @@ var box = document.getElementById('box'),
     //maxFPS = 60,
     delta = 0,
     timestep = 1000 / maxFPS,
-    gameFPS = maxFPS,
-    systemFPS = maxFPS,
+    gameFPS = null,
+    systemFPS = null,
     gameFramesThisSecond = 0,
     systemFramesThisSecond = 0,
     lastFpsUpdate = 0;
@@ -136,6 +136,9 @@ function mainLoop(timestamp) {
     begin(timestamp, delta);
 
     if (timestamp > lastFpsUpdate + 1000) {
+        if (!gameFPS) gameFPS = gameFramesThisSecond;
+        if (!systemFPS) systemFPS = systemFramesThisSecond;
+
         gameFPS = 0.25 * gameFramesThisSecond + 0.75 * gameFPS;
         systemFPS = 0.25 * systemFramesThisSecond + 0.75 * systemFPS;
 
@@ -177,7 +180,7 @@ function mainLoop(timestamp) {
 function onSpriteReady(sprite) {
     console.log("onSpriteReady: " + sprite.id);
     numSpritesLoaded++;
-    if (numSpritesToLoad >= numSpritesLoaded) {
+    if (numSpritesLoaded >= numSpritesToLoad) {
         for (let i = 0; i < maxRenderedSprites; i++) {
             let random_x = Math.floor(Math.random() * 1280);
             let random_y = Math.floor(Math.random() * 720);
@@ -188,6 +191,7 @@ function onSpriteReady(sprite) {
         }
 
         setupMouseInput();
+        lastFpsUpdate = Date.now();
 
         if (useSetTimeout) {
             setTimeout(mainLoop, 1);
@@ -196,7 +200,6 @@ function onSpriteReady(sprite) {
         }
     }
 }
-
 
 // Mouse/Touch Handling
 
