@@ -14,7 +14,7 @@ gulp.task("es6", function() {
             this.emit("end");
         })
         .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest("lib"));
+        .pipe(gulp.dest("dist"));
 });
 
 gulp.task('test', function () {
