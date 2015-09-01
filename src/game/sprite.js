@@ -47,8 +47,8 @@ class Sprite
                 this.sourceY,
                 this.width,
                 this.height,
-                this.x,
-                this.y,
+                Math.floor(this.x),
+                Math.floor(this.y),
                 this.width,
                 this.height
             );

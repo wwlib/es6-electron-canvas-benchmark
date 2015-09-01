@@ -1,22 +1,16 @@
 // Isaac Sukin
 // http://www.isaacsukin.com/news/2015/01/detailed-explanation-javascript-game-loops-and-timing
 
-'use strict';
+import config from '../config-sukin';
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _config_sukin = require('../config_sukin');
-
-var _config_sukin2 = _interopRequireDefault(_config_sukin);
-
-var testSpritesIncrement = _config_sukin2['default'].testSpritesIncrement;
-var maxRenderedSprites = _config_sukin2['default'].maxRenderedSprites;
-var testIterationInterval = _config_sukin2['default'].testIterationInterval;
-var clearCanvasPerFrame = _config_sukin2['default'].clearCanvasPerFrame;
-var clearSpritePerFrame = _config_sukin2['default'].clearSpritePerFrame;
-var useSetTimeout = _config_sukin2['default'].useSetTimeout;
-var maxFPS = _config_sukin2['default'].maxFPS;
-var throttleFramerate = _config_sukin2['default'].throttleFramerate;
+let testSpritesIncrement = config.testSpritesIncrement;
+let maxRenderedSprites = config.maxRenderedSprites;
+let testIterationInterval = config.testIterationInterval;
+let clearCanvasPerFrame = config.clearCanvasPerFrame;
+let clearSpritePerFrame = config.clearSpritePerFrame;
+let useSetTimeout = config.useSetTimeout;
+let maxFPS = config.maxFPS;
+let throttleFramerate = config.throttleFramerate;
 
 var box = document.getElementById('box'),
     fpsDisplayGame = document.getElementById('fpsDisplayGame'),
@@ -26,9 +20,8 @@ var box = document.getElementById('box'),
     boxVelocity = 0.08,
     limit = 300,
     lastFrameTimeMs = 0,
-
-//maxFPS = 60,
-delta = 0,
+    //maxFPS = 60,
+    delta = 0,
     timestep = 1000 / maxFPS,
     gameFPS = maxFPS,
     systemFPS = maxFPS,
@@ -44,22 +37,24 @@ function update(delta) {
 }
 
 function draw(interp) {
-    box.style.left = boxLastPos + (boxPos - boxLastPos) * interp + 'px';
+    box.style.left = (boxLastPos + (boxPos - boxLastPos) * interp) + 'px';
     fpsDisplayGame.textContent = Math.round(gameFPS) + ' Game FPS';
     fpsDisplaySystem.textContent = Math.round(systemFPS) + ' System FPS';
 }
 
 function panic() {
     delta = 0;
-    console.log('Panic.');
+    console.log(`Panic.`);
 }
 
-function begin() {}
+function begin() {
+}
 
 function end(gameFPS) {
     if (gameFPS < 25) {
         box.style.backgroundColor = 'blue';
-    } else if (gameFPS > 30) {
+    }
+    else if (gameFPS > 30) {
         box.style.backgroundColor = 'red';
     }
 }
@@ -69,10 +64,10 @@ function mainLoop(timestamp) {
         timestamp = Date.now();
     }
     systemFramesThisSecond++;
-    // Throttle the frame rate.   
-    if (throttleFramerate && timestamp < lastFrameTimeMs + timestep) {
+    // Throttle the frame rate.    
+    if (throttleFramerate && timestamp < lastFrameTimeMs + (timestep)) {
         if (useSetTimeout) {
-            setTimeout(mainLoop, 1);
+            setTimeout(mainLoop,1);
         } else {
             window.requestAnimationFrame(mainLoop);
         }
@@ -109,15 +104,14 @@ function mainLoop(timestamp) {
     end(gameFPS);
 
     if (useSetTimeout) {
-        setTimeout(mainLoop, 1);
+        setTimeout(mainLoop,1);
     } else {
         window.requestAnimationFrame(mainLoop);
     }
 }
 
 if (useSetTimeout) {
-    setTimeout(mainLoop, 1);
+    setTimeout(mainLoop,1);
 } else {
     window.requestAnimationFrame(mainLoop);
 }
-//# sourceMappingURL=main_sukin.js.map

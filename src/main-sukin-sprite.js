@@ -6,7 +6,7 @@
 import Sprite from './game/sprite';
 import MovingObject from './game/movingObject';
 import Rect from './game/rect';
-import config from '../config-sukin-sprite';
+import config from '../config-sukin';
 
 let canvas = document.getElementById("benchmark-canvas");
 let canvasContext = canvas.getContext("2d");
@@ -21,23 +21,28 @@ let testIterationInterval = config.testIterationInterval;
 let clearCanvasPerFrame = config.clearCanvasPerFrame;
 let clearSpritePerFrame = config.clearSpritePerFrame;
 let useSetTimeout = config.useSetTimeout;
+let throttleFramerate = config.throttleFramerate;
+let maxFPS = config.maxFPS;
 let testIteration = 0;
 let testIterationElapsedTime = null;
 let testSpritesCount = testSpritesIncrement;
 let score = 0;
 
 var box = document.getElementById('box'),
-    fpsDisplay = document.getElementById('fpsDisplay'),
+    fpsDisplayGame = document.getElementById('fpsDisplayGame'),
+    fpsDisplaySystem = document.getElementById('fpsDisplaySystem'),
     boxPos = 10,
     boxLastPos = 10,
     boxVelocity = 0.08,
     limit = 300,
     lastFrameTimeMs = 0,
-    maxFPS = 60,
+    //maxFPS = 60,
     delta = 0,
-    timestep = 1000 / 60,
-    fps = 60,
-    framesThisSecond = 0,
+    timestep = 1000 / maxFPS,
+    gameFPS = maxFPS,
+    systemFPS = maxFPS,
+    gameFramesThisSecond = 0,
+    systemFramesThisSecond = 0,
     lastFpsUpdate = 0;
 
 //box.style.top = '100px';
@@ -80,7 +85,8 @@ function draw(interp) {
         obj.draw(canvasContext, interp);
     }
 
-    fpsDisplay.textContent = Math.round(fps) + ' FPS';
+    fpsDisplayGame.textContent = Math.round(gameFPS) + ' gameFPS';
+    fpsDisplaySystem.textContent = Math.round(systemFPS) + ' systemFPS';
 }
 
 function panic() {
@@ -91,11 +97,11 @@ function panic() {
 function begin() {
 }
 
-function end(fps) {
-    if (fps < 25) {
+function end(gameFPS) {
+    if (gameFPS < 25) {
         box.style.backgroundColor = 'red';
     }
-    else if (fps > 30) {
+    else if (gameFPS > 30) {
         box.style.backgroundColor = 'forestgreen';
     }
 }
@@ -104,8 +110,9 @@ function mainLoop(timestamp) {
     if (!timestamp) {
         timestamp = Date.now();
     }
+    systemFramesThisSecond++;
     // Throttle the frame rate.    
-    if (timestamp < lastFrameTimeMs + (1000 / maxFPS)) {
+    if (throttleFramerate && timestamp < lastFrameTimeMs + (timestep)) {
         if (useSetTimeout) {
             setTimeout(mainLoop, 1);
         } else {
@@ -114,18 +121,22 @@ function mainLoop(timestamp) {
         //console.log(`Throttling.`);
         return;
     }
+    gameFramesThisSecond++;
+
     delta += timestamp - lastFrameTimeMs;
     lastFrameTimeMs = timestamp;
 
     begin(timestamp, delta);
 
     if (timestamp > lastFpsUpdate + 1000) {
-        fps = 0.25 * framesThisSecond + 0.75 * fps;
+        gameFPS = 0.25 * gameFramesThisSecond + 0.75 * gameFPS;
+        systemFPS = 0.25 * systemFramesThisSecond + 0.75 * systemFPS;
+
 
         lastFpsUpdate = timestamp;
-        framesThisSecond = 0;
+        gameFramesThisSecond = 0;
+        systemFramesThisSecond = 0;
     }
-    framesThisSecond++;
 
     var numUpdateSteps = 0;
     while (delta >= timestep) {
@@ -139,7 +150,7 @@ function mainLoop(timestamp) {
 
     draw(delta / timestep);
 
-    end(fps);
+    end(gameFPS);
 
     if (useSetTimeout) {
         setTimeout(mainLoop, 1);

@@ -1,5 +1,10 @@
 {
   "testSpritesIncrement": 100,
   "maxRenderedSprites": 1000,
-  "testIterationInterval": 3000
+  "testIterationInterval": 3000,
+  "clearCanvasPerFrame": false,
+  "clearSpritePerFrame": true,
+  "useSetTimeout": true,
+  "maxFPS": 60,
+  "throttleFramerate": true
 }
