@@ -64,14 +64,14 @@ var testIterationElapsedTime = null;
 var testSpritesCount = testSpritesIncrement;
 var score = 0;
 
-var lastFrameTimeMs = 0,
+var lastFrameTimeMs = null,
     delta = 0,
     timestep = 1000 / maxFPS,
     gameFPS = null,
     systemFPS = null,
     gameFramesThisSecond = 0,
     systemFramesThisSecond = 0,
-    lastFpsUpdate = 0;
+    lastFpsUpdate = null;
 
 // **** TEST **** //
 
@@ -107,6 +107,14 @@ function updateTestInterval(dTime) {
 function step(timestamp) {
     if (!timestamp) {
         timestamp = Date.now();
+    }
+
+    if (!lastFrameTimeMs) {
+        lastFrameTimeMs = timestamp;
+    }
+
+    if (!lastFpsUpdate) {
+        lastFpsUpdate = timestamp;
     }
 
     systemFramesThisSecond++;
@@ -176,12 +184,12 @@ function onSpriteReady(sprite) {
         }
 
         if (useSetTimeout) {
-            lastFrameTimeMs = Date.now();
-            lastFpsUpdate = Date.now();
+            //lastFrameTimeMs = Date.now();
+            //lastFpsUpdate = Date.now();
             setTimeout(step, 1);
         } else {
-            lastFrameTimeMs = 0;
-            lastFpsUpdate = 0;
+            //lastFrameTimeMs = 0;
+            //lastFpsUpdate = 0;
             window.requestAnimationFrame(step);
         }
     }
